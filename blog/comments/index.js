@@ -20,17 +20,38 @@ app.post('/posts/:id/comments', async (req, res) => {
   const commentId = randomBytes(4).toString('hex');
   const {content} = req.body;
   const comments = commentsByPostId[req.params.id] || [];
-  comments.push({id: commentId, content});
-
-  await axios.post('http://localhost:4005/events', {type: 'commentCreated', data: {id: commentId, content, postId: req.params.id}});
+  const newComment = {id: commentId, content, status: 'pending'};
+  comments.push(newComment);
 
   commentsByPostId[req.params.id] = comments;
 
-  res.status(201).send(comments);
+  await axios.post('http://localhost:4005/events', {type: 'commentCreated', data: {id: commentId, content, postId: req.params.id, status: 'pending'}})
+    .catch(err => console.error(err));
+
+  res.send({});
 });
 
-app.post('/events', (req, res) => {
+app.post('/events', async (req, res) => {
   console.log('Received event', req.body.type);
+
+  const {type, data} = req.body;
+
+  if (type === 'commentModerated') {
+    const {postId, id, status, content} = data;
+    const comments = commentsByPostId[postId];
+    const comment = comments.find(comment => comment.id === id);
+    comment.status = status;
+    await axios.post('http://localhost:4005/events', {
+      type: 'commentUpdated',
+      data: {
+        postId,
+        id,
+        status,
+        content
+      }
+    }).catch(err => console.error(err))
+  }
+
   res.send({})
 });
 
