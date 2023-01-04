@@ -14,6 +14,6 @@ export const CommentList = ({post}: CommentListProps) => {
     return null;
   }
 
-  const renderedComments = post.comments.map((comment: any) => <li key={comment.id}>{comment.content}</li>);
+  const renderedComments = post.comments.map((comment: any) => comment.status === 'approved' ? <li key={comment.id}>{comment.content}</li> : <li key={comment.id}>{comment.status}</li>);
   return <ul>{renderedComments}</ul>;
 }
