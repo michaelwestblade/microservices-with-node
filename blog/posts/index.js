@@ -22,7 +22,7 @@ app.post('/posts', async (req, res) => {
     id, title
   };
 
-  await axios.post('http://localhost:4005/events', {type: 'postCreated', data: {id, title}}).catch(err => console.error(err))
+  await axios.post('http://event-bus-srv:4005/events', {type: 'postCreated', data: {id, title}}).catch(err => console.error(err))
 
   res.status(201).send(posts[id]);
 });
