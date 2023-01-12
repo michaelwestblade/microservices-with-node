@@ -13,7 +13,7 @@ export const CommentCreate = ({post}: CommentCreateProps) => {
   const onSubmit = async (evt: ChangeEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
-    const res = await axios.post(`http://localhost:4001/posts/${post.id}/comments`, {content});
+    const res = await axios.post(`http://posts.com/posts/${post.id}/comments`, {content});
     setContent("");
   }
   return <div>
