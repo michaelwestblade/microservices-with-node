@@ -14,6 +14,7 @@ export const CommentCreate = ({post}: CommentCreateProps) => {
     evt.preventDefault();
 
     const res = await axios.post(`http://posts.com/posts/${post.id}/comments`, {content});
+    console.log(res);
     setContent("");
   }
   return <div>
