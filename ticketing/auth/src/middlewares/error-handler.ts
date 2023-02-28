@@ -6,16 +6,13 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
 
   if (err instanceof RequestValidationError) {
     console.log('Handling this error as a request validation error.');
-    const formattedErrors = err.errors.map(error => ({message: error.msg, field: error.param}));
-    return res.status(400).send({errors: formattedErrors});
+    return res.status(err.statusCode).send({errors: err.serializeErrors()});
   }
 
   if (err instanceof DatabaseConnectionError) {
     console.log('Handling this error as a DB connection error.');
-    return res.status(500).send({errors: [
-        {message: err.reason}
-      ]});
+    return res.status(err.statusCode).send({errors: err.serializeErrors()});
   }
 
-  res.status(400).send({message: err.message});
+  res.status(400).send({errors: [ {message: err.message} ]});
 }
