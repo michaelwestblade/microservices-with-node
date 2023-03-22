@@ -1,13 +1,14 @@
-import mongoose from 'mongoose';
-import { app } from './app';
+import mongoose from "mongoose";
+import { app } from "./app";
 
 const port = process.env.port || 3000;
+const MONGO_URI = process.env.MONGO_URI || "";
 
 const start = async () => {
   try {
-    await mongoose.connect(`mongodb://auth-mongo-srv:27017/auth`);
-    console.log('DB connected');
-  } catch ( error ) {
+    await mongoose.connect(MONGO_URI);
+    console.log("DB connected");
+  } catch (error) {
     console.error(error);
   }
 

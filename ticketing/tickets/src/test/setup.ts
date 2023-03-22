@@ -1,28 +1,34 @@
-import {MongoMemoryServer} from 'mongodb-memory-server';
-import mongoose from 'mongoose';
-import request from 'supertest';
-import { app } from '../app';
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import request from "supertest";
+import { app } from "../app";
 
 declare global {
-  var signin: () => Promise<string[]>;
+  var signin: () => string[];
 }
 
-global.signin = async () => {
-  const email = 'test@test.com';
-  const password = "password";
+const JWT_KEY = process.env.JWT_KEY || "";
 
-  const response = await request(app)
-    .post('/api/users/signup')
-    .send({
-      email,
-      password
-    })
-    .expect(201);
+global.signin = () => {
+  // Build a JWT payload. { id, email }
+  const payload = { id: "1234567890", email: "test@test.com" };
 
-  const cookie = response.get('Set-Cookie');
+  // Create the JWT
+  const token = jwt.sign(payload, JWT_KEY);
 
-  return cookie;
-}
+  // Build session Object {}
+  const session = { jwt: token };
+
+  // Turn that session into JSON
+  const sessionJson = JSON.stringify(session);
+
+  // Take JSON and encode as base64
+  const base64 = Buffer.from(sessionJson).toString("base64");
+
+  // return a string thats the cookie with the encoded data
+  return [`session=${base64}`];
+};
 
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
@@ -30,7 +36,6 @@ beforeAll(async () => {
   const mongoUri = mongo.getUri();
 
   await mongoose.connect(mongoUri, {});
-
 });
 
 beforeEach(async () => {
