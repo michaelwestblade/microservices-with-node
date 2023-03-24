@@ -11,8 +11,10 @@ declare global {
 const JWT_KEY = process.env.JWT_KEY || "";
 
 global.signin = () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
+
   // Build a JWT payload. { id, email }
-  const payload = { id: "1234567890", email: "test@test.com" };
+  const payload = { id, email: "test@test.com" };
 
   // Create the JWT
   const token = jwt.sign(payload, JWT_KEY);

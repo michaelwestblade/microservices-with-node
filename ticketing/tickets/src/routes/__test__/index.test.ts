@@ -9,7 +9,7 @@ const createTicket = (title: string, price: number) => {
     price,
   });
 };
-describe("tickets index route test", () => {
+describe("indexTicketRouter routes test", () => {
   it("can fetch a list of tickets", async () => {
     const cookie = global.signin();
 
