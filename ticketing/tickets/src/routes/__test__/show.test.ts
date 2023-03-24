@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "../../app";
-import { Ticket } from "../../models/ticket";
 import mongoose from "mongoose";
 describe("showTicketsRoutes route test", () => {
   it("returns a 404 if ticket is not found", async () => {
