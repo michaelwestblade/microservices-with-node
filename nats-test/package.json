@@ -6,7 +6,7 @@
   "scripts": {
     "publish": "ts-node-dev --rs --notify false src/publisher.ts",
     "listen": "ts-node-dev --rs --notify false src/listener.ts",
-    "portforward": " kubectl port-forward nats-depl-6b8bd8b6bb-xbbsz 4222:4222 8222:8222"
+    "portforward": "kubectl port-forward nats-depl-6565cd5c68-kt4zp 4222:4222 8222:8222"
   },
   "author": "",
   "license": "ISC",
