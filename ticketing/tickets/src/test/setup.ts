@@ -33,6 +33,8 @@ global.signin = () => {
 };
 
 let mongo: MongoMemoryServer;
+
+jest.mock("../nats-wrapper");
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();
