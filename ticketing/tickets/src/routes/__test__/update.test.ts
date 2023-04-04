@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
+import { natsWrapper } from "../../nats-wrapper";
 
 describe("updateTicketRouter route tests", () => {
   it("returns a 404 if provided id does not exist", async () => {
@@ -105,5 +106,27 @@ describe("updateTicketRouter route tests", () => {
 
     expect(updatedTicket.title).toEqual("test");
     expect(updatedTicket.price).toEqual(21);
+  });
+
+  it("publishes an event", async () => {
+    const cookie = global.signin();
+
+    const { body: ticket } = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", cookie)
+      .send({
+        title: "title",
+        price: 20,
+      });
+
+    const { body: ticketUpdate } = await request(app)
+      .put(`/api/tickets/${ticket.id}`)
+      .set("Cookie", cookie)
+      .send({
+        title: "test",
+        price: 21,
+      });
+
+    expect(natsWrapper.client.publish).toHaveBeenCalledTimes(2);
   });
 });
