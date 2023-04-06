@@ -1,8 +1,17 @@
 import express, { Request, Response } from "express";
-import { requireAuth, validateRequest } from "@westbladetickets/common";
+import {
+  BadRequestError,
+  NotFoundError,
+  OrderStatus,
+  requireAuth,
+  validateRequest,
+} from "@westbladetickets/common";
 import { body } from "express-validator";
+import { Ticket } from "../models/ticket";
+import { Order } from "../models/order";
 
 const router = express.Router();
+const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   "/api/orders",
@@ -10,7 +19,40 @@ router.post(
   [body("ticketId").not().isEmpty().withMessage("ticketId must be provided")],
   validateRequest,
   async (req: Request, res: Response) => {
-    res.send({});
+    const { ticketId } = req.body;
+
+    // find the ticket the user is trying to order in the DB
+    const ticket = await Ticket.findById(ticketId);
+
+    if (!ticket) {
+      throw new NotFoundError();
+    }
+
+    // make sure this ticket is not already reserved
+    const isReserved = await ticket.isReserved();
+
+    if (isReserved) {
+      throw new BadRequestError(
+        `ticket ${ticketId} already associated to an order`
+      );
+    }
+
+    // calculate an expiration date for this order
+    const expiration = new Date();
+    expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
+
+    // build the order and save it to the DB
+    const order = Order.build({
+      userId: req.currentUser!.id,
+      status: OrderStatus.CREATED,
+      expiresAt: expiration,
+      ticket,
+    });
+    await order.save();
+
+    // publish an event saying an order was created
+
+    res.status(201).send(order);
   }
 );
 
