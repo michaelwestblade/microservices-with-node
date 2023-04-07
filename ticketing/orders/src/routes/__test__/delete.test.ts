@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@westbladetickets/common";
 describe("Delete Order Routes tests", () => {
-  it("deletes an order by id", async () => {
+  it("marks an order as cancelled", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
       title: "test",
@@ -26,6 +26,14 @@ describe("Delete Order Routes tests", () => {
       .expect(200);
 
     expect(userOrder.id).toEqual(order.id);
+
+    const { body: cancelledOrder } = await request(app)
+      .get(`/api/orders/${order.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(200);
+
+    expect(userOrder.status).toEqual(OrderStatus.CANCELLED);
   });
 
   it("returns an error if user does not own order", async () => {
