@@ -53,4 +53,6 @@ describe("New Order Routes tests", () => {
       .send({ ticketId: ticket.id })
       .expect(201);
   });
+
+  it.todo("emits an order created event");
 });
