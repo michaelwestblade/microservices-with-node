@@ -7,6 +7,8 @@ import {
   OrderStatus,
   requireAuth,
 } from "@westbladetickets/common";
+import { OrderCancelledPublisher } from "../events/order-cancelled-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -33,6 +35,16 @@ router.delete(
 
     order.status = OrderStatus.CANCELLED;
     await order.save();
+
+    const orderCancelledPublisher = new OrderCancelledPublisher(
+      natsWrapper.client
+    );
+    await orderCancelledPublisher.publish({
+      id: order.id,
+      ticket: {
+        id: order.ticket.id,
+      },
+    });
 
     response.send(order);
   }

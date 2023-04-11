@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Ticket } from "../../models/ticket";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@westbladetickets/common";
+import { natsWrapper } from "../../nats-wrapper";
 
 describe("New Order Routes tests", () => {
   it("returns an error if the ticket does not exist", async () => {
@@ -54,5 +55,20 @@ describe("New Order Routes tests", () => {
       .expect(201);
   });
 
-  it.todo("emits an order created event");
+  it("emits an order created event", async () => {
+    const cookie = global.signin();
+    const ticket = Ticket.build({
+      title: "test",
+      price: 20,
+    });
+    await ticket.save();
+
+    await request(app)
+      .post("/api/orders")
+      .set("Cookie", cookie)
+      .send({ ticketId: ticket.id })
+      .expect(201);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+  });
 });

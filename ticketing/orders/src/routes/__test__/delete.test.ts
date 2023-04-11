@@ -4,6 +4,7 @@ import { Ticket } from "../../models/ticket";
 import mongoose from "mongoose";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@westbladetickets/common";
+import { natsWrapper } from "../../nats-wrapper";
 describe("Delete Order Routes tests", () => {
   it("marks an order as cancelled", async () => {
     const cookie = global.signin();
@@ -90,5 +91,28 @@ describe("Delete Order Routes tests", () => {
       .set("Cookie", cookie)
       .send()
       .expect(400);
+  });
+
+  it("emits an order cancelled event", async () => {
+    const cookie = global.signin();
+    const ticket = Ticket.build({
+      title: "test",
+      price: 20,
+    });
+    await ticket.save();
+
+    const { body: order } = await request(app)
+      .post("/api/orders")
+      .set("Cookie", cookie)
+      .send({ ticketId: ticket.id })
+      .expect(201);
+
+    const { body: userOrder } = await request(app)
+      .delete(`/api/orders/${order.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(200);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
   });
 });
