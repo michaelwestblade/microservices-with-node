@@ -15,7 +15,7 @@ interface OrderAttrs {
 // An interface that describes the properties that a User document has
 interface OrderDocument extends mongoose.Document {
   userId: string;
-  status: string;
+  status: OrderStatus;
   expiresAt: Date;
   ticket: TicketDoc;
 }
