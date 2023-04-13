@@ -6,6 +6,7 @@ describe("Show Order Routes tests", () => {
   it("fetches an order by id", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -30,6 +31,7 @@ describe("Show Order Routes tests", () => {
     const user1 = global.signin();
     const user2 = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });

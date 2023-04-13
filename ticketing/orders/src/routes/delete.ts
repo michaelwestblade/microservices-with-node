@@ -7,8 +7,8 @@ import {
   OrderStatus,
   requireAuth,
 } from "@westbladetickets/common";
-import { OrderCancelledPublisher } from "../events/order-cancelled-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 
 const router = express.Router();
 

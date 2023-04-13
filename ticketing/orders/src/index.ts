@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { randomBytes } from "crypto";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const port = process.env.port || 3000;
 const MONGO_URI = process.env.MONGO_URI || "";
@@ -29,6 +31,12 @@ const start = async () => {
   } catch (error) {
     console.error(error);
   }
+
+  const ticketCreatedListener = new TicketCreatedListener(natsWrapper.client);
+  const ticketUpdatedListener = new TicketUpdatedListener(natsWrapper.client);
+
+  ticketCreatedListener.listen();
+  ticketUpdatedListener.listen();
 
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);

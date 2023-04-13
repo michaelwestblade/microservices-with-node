@@ -9,6 +9,7 @@ describe("Delete Order Routes tests", () => {
   it("marks an order as cancelled", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -41,6 +42,7 @@ describe("Delete Order Routes tests", () => {
     const user1 = global.signin();
     const user2 = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -71,6 +73,7 @@ describe("Delete Order Routes tests", () => {
   it("returns an error if order already completed", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -96,6 +99,7 @@ describe("Delete Order Routes tests", () => {
   it("emits an order cancelled event", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
