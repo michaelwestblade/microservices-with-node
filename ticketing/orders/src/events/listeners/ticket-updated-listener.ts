@@ -12,11 +12,12 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
   queueGroupName = queueGroupName;
 
   async onMessage(data: TicketUpdatedEvent["data"], message: Message) {
-    const { id, title, price } = data;
-    const ticket = await Ticket.findById(id);
+    const { id, title, price, version } = data;
+    const oldVersion = version - 1;
+    const ticket = await Ticket.findOne({ _id: id, version: oldVersion });
 
     console.log(
-      `Updating Ticket with id ${id}, title ${title}, and price ${price}`
+      `Updating Ticket (version ${oldVersion} - ${version}) with id ${id}, title ${title}, and price ${price}`
     );
 
     if (!ticket) {

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@westbladetickets/common";
-import { ObjectId } from "mongodb";
 import { TicketDoc } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // An interface that describes the properties that
 // are required to create a new ticket
@@ -14,6 +14,7 @@ interface OrderAttrs {
 
 // An interface that describes the properties that a User document has
 interface OrderDocument extends mongoose.Document {
+  version: number;
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
@@ -55,6 +56,9 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => new Order(attrs);
 
