@@ -6,6 +6,8 @@ import {
 import { queueGroupName } from "./queue-group-name";
 import { Ticket } from "../../models/ticket";
 import { Message } from "node-nats-streaming";
+import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
+import { natsWrapper } from "../../nats-wrapper";
 
 export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
   readonly queueGroupName = queueGroupName;
@@ -24,6 +26,18 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
 
     // save the ticket
     await ticket.save();
+
+    const ticketUpdatedPublisher = new TicketUpdatedPublisher(
+      natsWrapper.client
+    );
+    await ticketUpdatedPublisher.publish({
+      id: ticket.id,
+      title: ticket.title,
+      version: ticket.version,
+      userId: ticket.userId,
+      price: ticket.price,
+      // orderId: ticket.orderId,
+    });
 
     // ack the message
     message.ack();
