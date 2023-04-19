@@ -52,4 +52,14 @@ describe("ticket created listener", () => {
 
     expect(message.ack).toHaveBeenCalled();
   });
+
+  it("does not call ack if the event has a skipped version number", async () => {
+    const { message, data, listener, ticket } = await setup();
+
+    data.version = 10;
+
+    await expect(listener.onMessage(data, message)).rejects.toThrow();
+
+    expect(message.ack).not.toHaveBeenCalled();
+  });
 });
