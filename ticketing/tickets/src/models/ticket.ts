@@ -10,11 +10,12 @@ interface TicketAttrs {
 }
 
 // An interface that describes the properties that a User document has
-interface TicketDocument extends mongoose.Document {
+export interface TicketDocument extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
   version: number;
+  orderId?: string;
 }
 
 // An interface that describes the properties a user model has
@@ -35,6 +36,10 @@ const ticketSchema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
+    },
+    orderId: {
+      type: String,
+      required: false,
     },
   },
   {
