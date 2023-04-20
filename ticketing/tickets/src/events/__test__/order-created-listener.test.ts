@@ -55,4 +55,18 @@ describe("order created listener", () => {
 
     expect(message.ack).toHaveBeenCalled();
   });
+
+  it("published a ticket updated event", async () => {
+    const { listener, data, message } = await setup();
+
+    await listener.onMessage(data, message);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+    const ticketUpdatedData = JSON.parse(
+      (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
+    );
+
+    expect(data.id).toEqual(ticketUpdatedData.orderId);
+  });
 });
