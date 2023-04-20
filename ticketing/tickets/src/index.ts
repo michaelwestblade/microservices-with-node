@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { randomBytes } from "crypto";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 
 const port = process.env.port || 3000;
 const MONGO_URI = process.env.MONGO_URI || "";
@@ -29,6 +31,12 @@ const start = async () => {
   } catch (error) {
     console.error(error);
   }
+
+  const orderCancelledListener = new OrderCancelledListener(natsWrapper.client);
+  const orderCreatedListener = new OrderCreatedListener(natsWrapper.client);
+
+  await orderCancelledListener.listen();
+  await orderCreatedListener.listen();
 
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
