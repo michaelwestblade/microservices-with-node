@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { Ticket } from "../models/ticket";
 import {
+  BadRequestError,
   currentUser,
   NotAuthorizedError,
   NotFoundError,
@@ -39,6 +40,11 @@ router.put(
         `User ${request?.currentUser?.id} does not match id on ticket ${ticket.userId}`
       );
       throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+      console.log(`Ticket ${ticket.id} is already reserved`);
+      throw new BadRequestError(`Ticket ${ticket.id} is already reserved`);
     }
 
     ticket.set({
