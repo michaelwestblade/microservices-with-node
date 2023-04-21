@@ -1,4 +1,5 @@
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 
 const NATS_URL = process.env.NATS_URL || "";
 const NATS_CLIENT_ID = process.env.NATS_CLIENT_ID || "";
@@ -14,6 +15,9 @@ const start = async () => {
 
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    const orderCreatedListener = new OrderCreatedListener(natsWrapper.client);
+    orderCreatedListener.listen();
   } catch (error) {
     console.error(error);
   }
