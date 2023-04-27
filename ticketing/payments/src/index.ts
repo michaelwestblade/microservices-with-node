@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 
 const port = process.env.port || 3000;
 const MONGO_URI = process.env.MONGO_URI || "";
@@ -22,6 +23,9 @@ const start = async () => {
       console.log("NATS connection closed");
       process.exit();
     });
+
+    const orderCreatedListener = new OrderCreatedListener(natsWrapper.client);
+    orderCreatedListener.listen();
 
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
