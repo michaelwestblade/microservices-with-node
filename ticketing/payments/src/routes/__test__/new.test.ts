@@ -3,6 +3,9 @@ import { app } from "../../app";
 import mongoose from "mongoose";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@westbladetickets/common";
+import { stripe } from "../../stripe";
+
+jest.mock("../../stripe");
 
 describe("New Payment Routes tests", () => {
   it("returns an error if the order does not exist", async () => {
@@ -50,5 +53,30 @@ describe("New Payment Routes tests", () => {
       .set("Cookie", cookie)
       .send({ orderId: order.id, token: "test" })
       .expect(400);
+  });
+
+  it("creates a payment for an order", async () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const cookie = global.signin(userId);
+    const order = Order.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
+      status: OrderStatus.CREATED,
+      version: 0,
+      userId,
+      price: 100,
+    });
+    await order.save();
+
+    await request(app)
+      .post("/api/payments")
+      .set("Cookie", cookie)
+      .send({ orderId: order.id, token: "tok_visa" })
+      .expect(201);
+
+    expect(stripe.charges.create).toHaveBeenCalledWith({
+      amount: 10000,
+      source: "tok_visa",
+      currency: "usd",
+    });
   });
 });
