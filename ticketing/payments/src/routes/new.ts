@@ -9,6 +9,7 @@ import {
   OrderStatus,
 } from "@westbladetickets/common";
 import { Order } from "../models/order";
+import { stripe } from "../stripe";
 
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { token, orderId } = req.body;
+
+    console.log(token);
 
     const order = await Order.findById(orderId);
 
@@ -38,6 +41,11 @@ router.post(
     }
 
     // create payment
+    const charge = await stripe.charges.create({
+      amount: order.price * 100,
+      currency: "usd",
+      source: token,
+    });
     res.send({ success: true });
   }
 );
