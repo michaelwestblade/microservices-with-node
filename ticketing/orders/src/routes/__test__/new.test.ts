@@ -20,6 +20,7 @@ describe("New Order Routes tests", () => {
   it("returns an error if the ticket is already reserved", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -43,6 +44,7 @@ describe("New Order Routes tests", () => {
   it("reserves a ticket", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });
@@ -58,6 +60,7 @@ describe("New Order Routes tests", () => {
   it("emits an order created event", async () => {
     const cookie = global.signin();
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "test",
       price: 20,
     });

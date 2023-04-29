@@ -12,6 +12,7 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
   queueGroupName = queueGroupName;
 
   async onMessage(data: OrderCreatedEvent["data"], message: Message) {
+    console.log(data);
     const order = Order.build({
       id: data.id,
       status: data.status,

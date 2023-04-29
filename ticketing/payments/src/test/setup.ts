@@ -3,16 +3,17 @@ import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 declare global {
-  var signin: () => string[];
+  var signin: (id?: string) => string[];
 }
 
 const JWT_KEY = process.env.JWT_KEY || "";
 
-global.signin = () => {
-  const id = new mongoose.Types.ObjectId().toHexString();
-
+global.signin = (id?: string) => {
   // Build a JWT payload. { id, email }
-  const payload = { id, email: "test@test.com" };
+  const payload = {
+    id: id || new mongoose.Types.ObjectId().toHexString(),
+    email: "test@test.com",
+  };
 
   // Create the JWT
   const token = jwt.sign(payload, JWT_KEY);

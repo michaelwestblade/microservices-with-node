@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
 
 const port = process.env.port || 3000;
 const MONGO_URI = process.env.MONGO_URI || "";
@@ -25,7 +26,11 @@ const start = async () => {
     });
 
     const orderCreatedListener = new OrderCreatedListener(natsWrapper.client);
+    const orderCancelledListener = new OrderCancelledListener(
+      natsWrapper.client
+    );
     orderCreatedListener.listen();
+    orderCancelledListener.listen();
 
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
