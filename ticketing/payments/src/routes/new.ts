@@ -10,6 +10,7 @@ import {
 } from "@westbladetickets/common";
 import { Order } from "../models/order";
 import { stripe } from "../stripe";
+import { Payment } from "../models/payment";
 
 const router = express.Router();
 
@@ -46,6 +47,11 @@ router.post(
       currency: "usd",
       source: token,
     });
+
+    // save payment
+    const payment = Payment.build({ orderId, stripeId: charge.id });
+    await payment.save();
+
     res.status(201).send({ success: true });
   }
 );

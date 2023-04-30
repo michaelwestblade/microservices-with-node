@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@westbladetickets/common";
 import { stripe } from "../../stripe";
+import { Payment } from "../../models/payment";
 
 jest.mock("../../stripe");
 
@@ -78,5 +79,8 @@ describe("New Payment Routes tests", () => {
       source: "tok_visa",
       currency: "usd",
     });
+
+    const payment = await Payment.findOne({ orderId: order.id });
+    expect(payment).toBeDefined();
   });
 });
