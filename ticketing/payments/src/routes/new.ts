@@ -63,7 +63,7 @@ router.post(
       id: payment.id,
     });
 
-    res.status(201).send({ success: true });
+    res.status(201).send({ payment });
   }
 );
 

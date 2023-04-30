@@ -5,6 +5,7 @@ import { randomBytes } from "crypto";
 import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
 import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
+import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
 
 const port = process.env.port || 3000;
 const MONGO_URI = process.env.MONGO_URI || "";
@@ -38,10 +39,12 @@ const start = async () => {
   const expirationCompleteListener = new ExpirationCompleteListener(
     natsWrapper.client
   );
+  const paymentCreatedListener = new PaymentCreatedListener(natsWrapper.client);
 
   ticketCreatedListener.listen();
   ticketUpdatedListener.listen();
   expirationCompleteListener.listen();
+  paymentCreatedListener.listen();
 
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
